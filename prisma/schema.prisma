@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Rank {
+  id Int @id @default(autoincrement())
+
+  name       String
+  points     Int    @default(0)
+  created_at DateTime @default(now())
+
+  @@index([id])
+  @@map("rank")
+}
+
+model Question_Type {
+  id Int @id @default(autoincrement())
+
+  description String @unique
+
+  Question Question[]
+  @@index([id, description])
+  @@map("question_type")
+}
+
+model Image {
+  id          Int    @id @default(autoincrement())
+  path        String
+  description String @unique
+
+  created_at DateTime @default(now())
+
+  @@index([id, path])
+  @@map("images")
+}
+
+model Options {
+  id Int @id @default(autoincrement())
+
+  option_a String
+  image_a  String
+  option_b String
+  image_b  String
+  option_c String
+  image_c  String
+  option_d String
+  image_d  String
+
+
+  Question Question[]
+  @@index([id])
+  @@map("options")
+}
+
+model Question {
+  id         Int           @id @default(autoincrement())
+  type       Question_Type @relation(fields: [question_TypeId], references: [id])
+  question   String
+  answer     String
+  options    Options       @relation(fields: [optionsId], references: [id])
+  status     Boolean       @default(true)
+  created_at DateTime      @default(now())
+
+  question_TypeId Int
+  optionsId       Int
+  @@index([id])
+  @@map("questions")
+}
